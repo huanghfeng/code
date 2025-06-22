@@ -1,8 +1,5 @@
-import http from 'node:http';
-import fs from 'node:fs';
 import { createServer } from 'vite';
 import express from 'express';
-
 const vite = await createServer({
     server: { middlewareMode: true },
     appType: "custom"
@@ -11,8 +8,10 @@ const vite = await createServer({
 const app = express();
 app.use(vite.middlewares);
 
-app.use("*", async (res, req) => {
-    res.send("hello world");
+app.use("*", async (req, res) => {
+    const { render } = await vite.ssrLoadModule("./render.jsx");
+    const html = render();
+    res.send(html);
 })
 
 app.listen(3000, () => {
